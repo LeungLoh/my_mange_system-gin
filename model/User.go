@@ -1,12 +1,10 @@
 package model
 
-import "gorm.io/gorm"
-
 type User struct {
-	gorm.Model
+	ID       uint   `gorm:"primarykey"`
 	Username string `gorm:"column:username"`
 	Password string `gorm:"column:password"`
-	RoleId   string `gorm:"column:roleid"`
+	RoleId   int    `gorm:"column:roleid"`
 	Status   bool   `gorm:"column:status"`
 }
 
