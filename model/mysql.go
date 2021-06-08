@@ -41,4 +41,9 @@ func Database(connString string) {
 	//打开
 	sqlDB.SetMaxOpenConns(20)
 	DB = db
+	migration()
+}
+
+func migration() {
+	DB.AutoMigrate(&User{})
 }
