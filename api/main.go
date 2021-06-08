@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +8,6 @@ import (
 
 //请求成功的时候 使用该方法返回信息
 func Success(ctx *gin.Context, data interface{}, msg interface{}) {
-	fmt.Println(data)
 	ctx.JSON(http.StatusOK, map[string]interface{}{
 		"code": 200,
 		"msg":  msg,
