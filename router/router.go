@@ -13,7 +13,7 @@ func NewRouter() *gin.Engine {
 	// r.Use(middleware.JWTAuth())
 	v1 := r.Group("/api/v1")
 	{
-		v1.POST("user/login", api.PostUserLogin)
+		v1.POST("user/login", api.UserLogin)
 
 		auth := v1.Group("")
 		auth.Use(middleware.JWTAuth())

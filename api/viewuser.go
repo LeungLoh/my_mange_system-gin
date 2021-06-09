@@ -23,7 +23,7 @@ func UserRegister(ctx *gin.Context) {
 
 }
 
-func PostUserLogin(ctx *gin.Context) {
+func UserLogin(ctx *gin.Context) {
 	var user User
 
 	if ctx.ShouldBind(&user) == nil {
