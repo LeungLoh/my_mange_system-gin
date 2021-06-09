@@ -2,7 +2,11 @@ package server
 
 import (
 	"fmt"
+	"my_mange_system/middleware"
 	"my_mange_system/model"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserList struct {
@@ -35,4 +39,23 @@ func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList
 		new_users = append(new_users, row)
 	}
 	return new_users, total
+}
+
+func GenerateToken(ctx *gin.Context, username string) {
+	jwt := middleware.NewJWT()
+	claims := middleware.NewCustomClaims(username)
+	token, err := jwt.CreateToken(claims)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": -1,
+			"msg":    err.Error(),
+			"data":   nil,
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": 0,
+		"msg":    "登陆成功",
+		"data":   gin.H{"token": token},
+	})
+	return
 }

@@ -14,15 +14,30 @@ type Userinfo struct {
 	Limit    int    `form:"limit"`
 }
 
-func UserRegister(c *gin.Context) {
+type User struct {
+	Username string `form:"username"`
+	Password string `form:"password"`
+}
+
+func UserRegister(ctx *gin.Context) {
 
 }
 
-func UserLogin(c *gin.Context) {
+func PostUserLogin(ctx *gin.Context) {
+	var user User
 
+	if ctx.ShouldBind(&user) == nil {
+		server.GenerateToken(ctx, user.Username)
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": -1,
+			"msg":    "用户数据解析失败",
+			"data":   nil,
+		})
+	}
 }
 
-func UserLogout(c *gin.Context) {
+func UserLogout(ctx *gin.Context) {
 
 }
 
@@ -42,5 +57,5 @@ func UserList(ctx *gin.Context) {
 	})
 }
 
-func UserDelete(c *gin.Context) {
+func UserDelete(ctx *gin.Context) {
 }
