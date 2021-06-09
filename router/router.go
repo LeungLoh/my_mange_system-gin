@@ -14,13 +14,8 @@ func NewRouter() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("user/login", api.UserLogin)
-
-		auth := v1.Group("")
-		auth.Use(middleware.JWTAuth())
-		{
-			v1.GET("user/list", middleware.JWTAuth(), api.UserList)
-		}
-
+		v1.GET("user/list", middleware.JWTAuth(), api.UserList)
+		v1.GET("user/info", middleware.JWTAuth(), api.UserInfo)
 	}
 	return r
 }

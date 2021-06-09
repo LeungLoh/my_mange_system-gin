@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"my_mange_system/middleware"
 	"my_mange_system/model"
 	"net/http"
@@ -15,6 +14,15 @@ type UserList struct {
 	Userid   uint   `json:"userid"`
 }
 
+func CheckOutUser(username string, password string) bool {
+	var user model.User
+	DB := model.DB.Model(&model.User{})
+	DB.Where("username = ?", username).First(&user)
+	if user.Password == password {
+		return true
+	}
+	return false
+}
 func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList, int64) {
 	var users []model.User
 	var new_users []UserList
@@ -28,7 +36,6 @@ func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList
 	}
 	DB.Count(&total)
 	DB.Limit(limit).Offset(offset).Find(&users)
-	fmt.Println(total)
 	for _, user := range users {
 		row := UserList{
 			Username: user.Username,
@@ -58,4 +65,11 @@ func GenerateToken(ctx *gin.Context, username string) {
 		"data":   gin.H{"token": token},
 	})
 	return
+}
+
+func GetUserinfo(username string) (string, int) {
+	var user model.User
+	DB := model.DB.Model(&model.User{})
+	DB.Where("username = ?", username).First(&user)
+	return user.Username, user.RoleId
 }
