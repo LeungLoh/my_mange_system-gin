@@ -2,6 +2,7 @@ package api
 
 import (
 	"my_mange_system/server"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,13 +30,16 @@ func UserList(ctx *gin.Context) {
 	var userinfo = Userinfo{
 		Username: "",
 		Roleid:   0,
-		Offset:   0,
+		Offset:   1,
 		Limit:    10,
 	}
 	ctx.ShouldBindQuery(&userinfo)
-	users := server.GetUsetList(userinfo.Username, userinfo.Roleid, userinfo.Offset, userinfo.Limit)
-
-	Success(ctx, users, "test")
+	users, total := server.GetUsetList(userinfo.Username, userinfo.Roleid, (userinfo.Offset-1)*userinfo.Limit, userinfo.Limit)
+	ctx.JSON(http.StatusOK, map[string]interface{}{
+		"code":  200,
+		"data":  users,
+		"total": total,
+	})
 }
 
 func UserDelete(c *gin.Context) {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"my_mange_system/model"
 )
 
@@ -10,17 +11,20 @@ type UserList struct {
 	Userid   uint   `json:"userid"`
 }
 
-func GetUsetList(username string, roleid int, offset int, limit int) []UserList {
+func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList, int64) {
 	var users []model.User
 	var new_users []UserList
-	DB := model.DB
+	var total int64
+	DB := model.DB.Model(&model.User{})
 	if username != "" {
 		DB = DB.Where("username LIKE ?", "%"+username+"%")
 	}
 	if roleid > 0 {
 		DB = DB.Where("roleid = ?", roleid)
 	}
-	DB.Offset(offset).Limit(limit).Find(&users)
+	DB.Count(&total)
+	DB.Limit(limit).Offset(offset).Find(&users)
+	fmt.Println(total)
 	for _, user := range users {
 		row := UserList{
 			Username: user.Username,
@@ -30,5 +34,5 @@ func GetUsetList(username string, roleid int, offset int, limit int) []UserList 
 
 		new_users = append(new_users, row)
 	}
-	return new_users
+	return new_users, total
 }
