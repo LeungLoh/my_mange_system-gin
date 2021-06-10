@@ -1,8 +1,10 @@
 package common
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,4 +27,19 @@ func Error(ctx *gin.Context, httpcode int, msg string) {
 		"status": httpcode,
 		"msg":    msg,
 	})
+}
+
+func SetSession(ctx *gin.Context, key string, value interface{}) {
+	session := sessions.Default(ctx)
+	session.Set(key, value)
+	err := session.Save()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func GetSession(ctx *gin.Context, key string) interface{} {
+	session := sessions.Default(ctx)
+	value := session.Get(key)
+	return value
 }
