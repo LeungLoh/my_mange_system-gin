@@ -1,6 +1,7 @@
 package api
 
 import (
+	"my_mange_system/common"
 	"my_mange_system/server"
 	"net/http"
 
@@ -31,19 +32,10 @@ func UserLogin(ctx *gin.Context) {
 			server.UpdateLoginInfo(userloginparams.City, userloginparams.Username)
 			server.GenerateToken(ctx, userloginparams.Username)
 		} else {
-			ctx.JSON(http.StatusOK, gin.H{
-				"status": -1,
-				"msg":    "账号或密码错误",
-				"data":   nil,
-			})
+			common.BadRequest(ctx, "账号密码错误")
 		}
-
 	} else {
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": -1,
-			"msg":    "用户数据解析失败",
-			"data":   nil,
-		})
+		common.BadRequest(ctx, "用户数据解析失败")
 	}
 }
 
