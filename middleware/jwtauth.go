@@ -14,6 +14,7 @@ func JWTAuth() gin.HandlerFunc {
 		token := ctx.Request.Header.Get("token")
 		if token == "" {
 			common.Error(ctx, http.StatusUnauthorized, "token校验失败")
+			ctx.Abort()
 			return
 		}
 		// 初始化一个JWT对象实例，并根据结构体方法来解析token
@@ -22,6 +23,7 @@ func JWTAuth() gin.HandlerFunc {
 		claims, err := j.ParserToken(token)
 		if err != nil {
 			common.Error(ctx, http.StatusUnauthorized, "token校验失败")
+			ctx.Abort()
 			return
 		}
 		// 将解析后的有效载荷claims重新写入gin.Context引用对象中
