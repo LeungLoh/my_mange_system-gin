@@ -5,6 +5,7 @@ import (
 	"my_mange_system/server"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,12 +45,16 @@ func UserLogin(ctx *gin.Context) {
 
 func UserInfo(ctx *gin.Context) {
 	var userinfoparams UserLoginParams
+	session := sessions.Default(ctx)
 	ctx.ShouldBindQuery(&userinfoparams)
 	username, roleid, city, lastlogintime := server.GetUserinfo(userinfoparams.Username)
-	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime}}
+	user := gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime}
+	session.Set("user", user)
+	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: user}
 	ctx.Set("Res", res)
 	ctx.Next()
 }
+
 func UserList(ctx *gin.Context) {
 	var userlistparams = UserListParams{
 		Username: "",

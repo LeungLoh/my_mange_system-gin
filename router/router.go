@@ -11,7 +11,7 @@ func NewRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.Cors())
 	r.Use(middleware.Response())
-	// r.Use(middleware.JWTAuth())
+	r.Use(middleware.Sessions("SESSION_SECRET"))
 	v1 := r.Group("/api/v1")
 	{
 		v1.POST("user/login", api.UserLogin)
