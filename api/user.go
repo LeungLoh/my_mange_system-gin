@@ -1,13 +1,19 @@
 package api
 
 import (
+	"fmt"
 	"my_mange_system/common"
 	"my_mange_system/server"
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
+
+type UserLoginParams struct {
+	Username string `form:"username"`
+	Password string `form:"password"`
+	City     string `form:"city"`
+}
 
 type UserListParams struct {
 	Username string `form:"username"`
@@ -16,10 +22,10 @@ type UserListParams struct {
 	Limit    int    `form:"limit"`
 }
 
-type UserLoginParams struct {
+type UserListHandle struct {
 	Username string `form:"username"`
 	Password string `form:"password"`
-	City     string `form:"city"`
+	UserId   int    `form:"userId"`
 }
 
 func UserRegister(ctx *gin.Context) {
@@ -30,7 +36,7 @@ func UserLogin(ctx *gin.Context) {
 	var userloginparams UserLoginParams
 	var res common.Result
 	if ctx.ShouldBind(&userloginparams) == nil {
-		if server.CheckOutUser(userloginparams.Username, userloginparams.Password) == true {
+		if server.CheckOutUser(ctx, userloginparams.Username, userloginparams.Password) == true {
 			server.UpdateLoginInfo(userloginparams.City, userloginparams.Username)
 			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功"}
 		} else {
@@ -45,12 +51,9 @@ func UserLogin(ctx *gin.Context) {
 
 func UserInfo(ctx *gin.Context) {
 	var userinfoparams UserLoginParams
-	session := sessions.Default(ctx)
 	ctx.ShouldBindQuery(&userinfoparams)
 	username, roleid, city, lastlogintime := server.GetUserinfo(userinfoparams.Username)
-	user := gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime}
-	session.Set("user", user)
-	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: user}
+	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime}}
 	ctx.Set("Res", res)
 	ctx.Next()
 }
@@ -70,6 +73,26 @@ func UserList(ctx *gin.Context) {
 }
 
 func UserDelete(ctx *gin.Context) {
+	// var user UserListHandle
+
+	user := common.GetSession(ctx, "user")
+	if user != nil {
+		fmt.Println(user)
+	} else {
+		fmt.Println("222222222222222222")
+	}
+	res := common.Result{Httpcode: 200, Msg: "非管理员无法删除"}
+	ctx.Set("Res", res)
+	ctx.Next()
+	// fmt.Println(user)
+	// if user["roleid"] == 1 {
+	// 	res := common.Result{Httpcode: http.StatusUnauthorized, Msg: "非管理员无法删除"}
+	// 	ctx.Set("Res", res)
+	// 	ctx.Next()
+	// }
+	// if ctx.ShouldBind(&userloginparams) == nil{
+
+	// }
 }
 
 func UserLogout(ctx *gin.Context) {
