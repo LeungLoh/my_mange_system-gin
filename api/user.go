@@ -59,11 +59,9 @@ func UserList(ctx *gin.Context) {
 	}
 	ctx.ShouldBindQuery(&userlistparams)
 	users, total := server.GetUsetList(userlistparams.Username, userlistparams.Roleid, (userlistparams.Offset-1)*userlistparams.Limit, userlistparams.Limit)
-	ctx.JSON(http.StatusOK, map[string]interface{}{
-		"code":  200,
-		"data":  users,
-		"total": total,
-	})
+	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"users": users, "total": total}}
+	ctx.Set("Res", res)
+	ctx.Next()
 }
 
 func UserDelete(ctx *gin.Context) {
