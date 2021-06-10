@@ -1,8 +1,8 @@
 package api
 
 import (
-	"fmt"
 	"my_mange_system/common"
+	"my_mange_system/model"
 	"my_mange_system/server"
 	"net/http"
 
@@ -76,23 +76,24 @@ func UserDelete(ctx *gin.Context) {
 	// var user UserListHandle
 
 	user := common.GetSession(ctx, "user")
-	if user != nil {
-		fmt.Println(user)
-	} else {
-		fmt.Println("222222222222222222")
+	if user == nil {
+		res := common.Result{Httpcode: http.StatusInternalServerError, Msg: "无法获取用户信息"}
+		ctx.Set("Res", res)
+		ctx.Next()
+		return
 	}
-	res := common.Result{Httpcode: 200, Msg: "非管理员无法删除"}
+	userf := user.(model.User)
+	if userf.ID != 1 {
+		res := common.Result{Httpcode: http.StatusUnauthorized, Msg: "非管理员无法删除"}
+		ctx.Set("Res", res)
+		ctx.Next()
+		return
+	}
+	res := common.Result{Httpcode: http.StatusOK, Msg: "可以删除"}
 	ctx.Set("Res", res)
 	ctx.Next()
-	// fmt.Println(user)
-	// if user["roleid"] == 1 {
-	// 	res := common.Result{Httpcode: http.StatusUnauthorized, Msg: "非管理员无法删除"}
-	// 	ctx.Set("Res", res)
-	// 	ctx.Next()
-	// }
-	// if ctx.ShouldBind(&userloginparams) == nil{
+	return
 
-	// }
 }
 
 func UserLogout(ctx *gin.Context) {
