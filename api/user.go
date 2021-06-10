@@ -17,6 +17,7 @@ type UserListParams struct {
 type UserLoginParams struct {
 	Username string `form:"username"`
 	Password string `form:"password"`
+	City     string `form:"city"`
 }
 
 func UserRegister(ctx *gin.Context) {
@@ -27,6 +28,7 @@ func UserLogin(ctx *gin.Context) {
 	var userloginparams UserLoginParams
 	if ctx.ShouldBind(&userloginparams) == nil {
 		if server.CheckOutUser(userloginparams.Username, userloginparams.Password) == true {
+			server.UpdateLoginInfo(userloginparams.City, userloginparams.Username)
 			server.GenerateToken(ctx, userloginparams.Username)
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -48,11 +50,11 @@ func UserLogin(ctx *gin.Context) {
 func UserInfo(ctx *gin.Context) {
 	var userinfoparams UserLoginParams
 	ctx.ShouldBindQuery(&userinfoparams)
-	username, roleid := server.GetUserinfo(userinfoparams.Username)
+	username, roleid, city, lastlogintime := server.GetUserinfo(userinfoparams.Username)
 	ctx.JSON(http.StatusOK, gin.H{
 		"status": 0,
 		"msg":    "获取信息成功",
-		"data":   gin.H{"username": username, "roleid": roleid},
+		"data":   gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime},
 	})
 }
 func UserList(ctx *gin.Context) {

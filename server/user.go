@@ -4,6 +4,7 @@ import (
 	"my_mange_system/middleware"
 	"my_mange_system/model"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,25 @@ type UserList struct {
 	Username string `json:"username"`
 	Roleid   int    `json:"roleid"`
 	Userid   uint   `json:"userid"`
+}
+
+func GenerateToken(ctx *gin.Context, username string) {
+	jwt := middleware.NewJWT()
+	claims := middleware.NewCustomClaims(username)
+	token, err := jwt.CreateToken(claims)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": -1,
+			"msg":    err.Error(),
+			"data":   nil,
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": 0,
+		"msg":    "登陆成功",
+		"data":   gin.H{"token": token},
+	})
+	return
 }
 
 func CheckOutUser(username string, password string) bool {
@@ -23,6 +43,20 @@ func CheckOutUser(username string, password string) bool {
 	}
 	return false
 }
+
+func UpdateLoginInfo(city string, username string) {
+	DB := model.DB.Model(&model.User{})
+	timestamp := time.Now().Unix()
+	DB.Where("username = ?", username).Updates(model.User{City: city, LastLoginTime: timestamp})
+}
+
+func GetUserinfo(username string) (string, int, string, string) {
+	var user model.User
+	DB := model.DB.Model(&model.User{})
+	DB.Where("username = ?", username).First(&user)
+	return user.Username, user.RoleId, user.City, time.Unix(user.LastLoginTime, 0).Format("2006-01-02 15:04:05")
+}
+
 func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList, int64) {
 	var users []model.User
 	var new_users []UserList
@@ -46,30 +80,4 @@ func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList
 		new_users = append(new_users, row)
 	}
 	return new_users, total
-}
-
-func GenerateToken(ctx *gin.Context, username string) {
-	jwt := middleware.NewJWT()
-	claims := middleware.NewCustomClaims(username)
-	token, err := jwt.CreateToken(claims)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": -1,
-			"msg":    err.Error(),
-			"data":   nil,
-		})
-	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": 0,
-		"msg":    "登陆成功",
-		"data":   gin.H{"token": token},
-	})
-	return
-}
-
-func GetUserinfo(username string) (string, int) {
-	var user model.User
-	DB := model.DB.Model(&model.User{})
-	DB.Where("username = ?", username).First(&user)
-	return user.Username, user.RoleId
 }

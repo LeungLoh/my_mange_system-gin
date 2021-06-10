@@ -72,7 +72,6 @@ func JWTAuth() gin.HandlerFunc {
 		// 解析token中包含的相关信息(有效载荷)
 		claims, err := j.ParserToken(token)
 		if err != nil {
-			fmt.Println(err)
 			c.JSON(http.StatusOK, gin.H{
 				"status": -1,
 				"msg":    "token解析失败",
