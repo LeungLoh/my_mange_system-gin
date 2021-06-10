@@ -1,8 +1,11 @@
 package server
 
 import (
+	"my_mange_system/common"
 	"my_mange_system/model"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserList struct {
@@ -11,11 +14,12 @@ type UserList struct {
 	Userid   uint   `json:"userid"`
 }
 
-func CheckOutUser(username string, password string) bool {
+func CheckOutUser(ctx *gin.Context, username string, password string) bool {
 	var user model.User
 	DB := model.DB.Model(&model.User{})
 	DB.Where("username = ?", username).First(&user)
 	if user.Password == password {
+		common.SetSession(ctx, "user", user)
 		return true
 	}
 	return false
