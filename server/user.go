@@ -1,29 +1,14 @@
 package server
 
 import (
-	"my_mange_system/common"
-	"my_mange_system/middleware"
 	"my_mange_system/model"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type UserList struct {
 	Username string `json:"username"`
 	Roleid   int    `json:"roleid"`
 	Userid   uint   `json:"userid"`
-}
-
-func GenerateToken(ctx *gin.Context, username string) {
-	jwt := middleware.NewJWT()
-	claims := middleware.NewCustomClaims(username)
-	token, err := jwt.CreateToken(claims)
-	if err != nil {
-		common.InternalServerError(ctx, "token创建失败")
-	}
-	common.Success(ctx, "登录成功", gin.H{"token": token})
-	return
 }
 
 func CheckOutUser(username string, password string) bool {

@@ -10,6 +10,7 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.Cors())
+	r.Use(middleware.Response())
 	// r.Use(middleware.JWTAuth())
 	v1 := r.Group("/api/v1")
 	{

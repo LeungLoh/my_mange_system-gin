@@ -27,27 +27,28 @@ func UserRegister(ctx *gin.Context) {
 
 func UserLogin(ctx *gin.Context) {
 	var userloginparams UserLoginParams
+	var res common.Result
 	if ctx.ShouldBind(&userloginparams) == nil {
 		if server.CheckOutUser(userloginparams.Username, userloginparams.Password) == true {
 			server.UpdateLoginInfo(userloginparams.City, userloginparams.Username)
-			server.GenerateToken(ctx, userloginparams.Username)
+			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功"}
 		} else {
-			common.BadRequest(ctx, "账号密码错误")
+			res = common.Result{Httpcode: http.StatusBadRequest, Msg: "账号密码错误"}
 		}
 	} else {
-		common.BadRequest(ctx, "用户数据解析失败")
+		res = common.Result{Httpcode: http.StatusBadRequest, Msg: "用户数据解析失败"}
 	}
+	ctx.Set("Res", res)
+	ctx.Next()
 }
 
 func UserInfo(ctx *gin.Context) {
 	var userinfoparams UserLoginParams
 	ctx.ShouldBindQuery(&userinfoparams)
 	username, roleid, city, lastlogintime := server.GetUserinfo(userinfoparams.Username)
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": 0,
-		"msg":    "获取信息成功",
-		"data":   gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime},
-	})
+	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"username": username, "roleid": roleid, "city": city, "lastlogintime": lastlogintime}}
+	ctx.Set("Res", res)
+	ctx.Next()
 }
 func UserList(ctx *gin.Context) {
 	var userlistparams = UserListParams{
