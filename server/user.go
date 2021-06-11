@@ -31,13 +31,6 @@ func UpdateLoginInfo(city string, username string) {
 	DB.Where("username = ?", username).Updates(model.User{City: city, LastLoginTime: timestamp})
 }
 
-func GetUserinfo(username string) (string, int, string, string) {
-	var user model.User
-	DB := model.DB.Model(&model.User{})
-	DB.Where("username = ?", username).First(&user)
-	return user.Username, user.RoleId, user.City, time.Unix(user.LastLoginTime, 0).Format("2006-01-02 15:04:05")
-}
-
 func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList, int64) {
 	var users []model.User
 	var new_users []UserList
@@ -61,4 +54,8 @@ func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList
 		new_users = append(new_users, row)
 	}
 	return new_users, total
+}
+
+func UserDelete(userids []int) {
+
 }
