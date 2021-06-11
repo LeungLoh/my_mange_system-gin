@@ -15,15 +15,15 @@ type UserList struct {
 	Userid   uint   `json:"userid"`
 }
 
-func CheckOutUser(ctx *gin.Context, username string, password string) bool {
+func CheckOutUser(ctx *gin.Context, username string, password string) (bool, model.User) {
 	var user model.User
 	DB := model.DB.Model(&model.User{})
 	DB.Where("username = ?", username).First(&user)
 	if user.Password == password {
 		common.SetSession(ctx, "user", user)
-		return true
+		return true, user
 	}
-	return false
+	return false, model.User{}
 }
 
 func UpdateLoginInfo(city string, username string) {

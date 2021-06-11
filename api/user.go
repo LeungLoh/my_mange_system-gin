@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,9 +40,10 @@ func UserLogin(ctx *gin.Context) {
 	var params UserHandleParams
 	var res common.Result
 	if ctx.ShouldBind(&params) == nil {
-		if server.CheckOutUser(ctx, params.Username, params.Password) == true {
+		result, user := server.CheckOutUser(ctx, params.Username, params.Password)
+		if result == true {
 			server.UpdateLoginInfo(params.City, params.Username)
-			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功"}
+			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功", Data: gin.H{"username": user.Username, "userid": user.ID, "roleid": user.RoleId}}
 		} else {
 			res = common.Result{Httpcode: http.StatusNoContent, Err: "账号密码错误"}
 		}
@@ -159,5 +161,10 @@ func UserUpdate(ctx *gin.Context) {
 	ctx.Next()
 }
 func UserLogout(ctx *gin.Context) {
-
+	s := sessions.Default(ctx)
+	s.Clear()
+	s.Save()
+	res := common.Result{Httpcode: http.StatusOK, Msg: "退出登录成功"}
+	ctx.Set("Res", res)
+	ctx.Next()
 }
