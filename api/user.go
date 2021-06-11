@@ -5,6 +5,7 @@ import (
 	"my_mange_system/model"
 	"my_mange_system/server"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -26,15 +27,11 @@ type UserListParams struct {
 type UserHandleParams struct {
 	Username string `form:"username"`
 	Password string `form:"password"`
-	UserId   int    `form:"userId"`
-	Roleid   int    `form:"roleid"`
+	UserId   string `form:"userid"`
+	Roleid   string `form:"roleid"`
 	City     string `form:"city"`
 	Offset   int    `form:"offset"`
 	Limit    int    `form:"limit"`
-}
-
-func UserRegister(ctx *gin.Context) {
-
 }
 
 func UserLogin(ctx *gin.Context) {
@@ -90,8 +87,8 @@ func UserList(ctx *gin.Context) {
 }
 
 func UserDelete(ctx *gin.Context) {
-	// var user UserListHandle
-
+	var params UserHandleParams
+	var res common.Result
 	user := common.GetSession(ctx, "user")
 	if user == nil {
 		res := common.Result{Httpcode: http.StatusInternalServerError, Msg: "无法获取用户信息"}
@@ -99,14 +96,26 @@ func UserDelete(ctx *gin.Context) {
 		ctx.Next()
 		return
 	}
-	userf := user.(model.User)
-	if userf.ID != 1 {
+	userinfo := user.(model.User)
+	if userinfo.RoleId != 1 {
 		res := common.Result{Httpcode: http.StatusUnauthorized, Msg: "非管理员无法删除"}
 		ctx.Set("Res", res)
 		ctx.Next()
 		return
 	}
-	res := common.Result{Httpcode: http.StatusOK, Msg: "可以删除"}
+	if ctx.ShouldBind(&params) == nil {
+		userids := strings.Split(params.UserId, ",")
+		roleids := strings.Split(params.Roleid, ",")
+		result, msg := server.DeleteUserList(userids, roleids, userinfo)
+		if result == false {
+			res = common.Result{Httpcode: http.StatusBadRequest, Msg: msg}
+		} else {
+			res = common.Result{Httpcode: http.StatusOK, Msg: msg}
+		}
+	} else {
+		res = common.Result{Httpcode: http.StatusBadRequest, Msg: "用户数据解析失败"}
+	}
+
 	ctx.Set("Res", res)
 	ctx.Next()
 	return

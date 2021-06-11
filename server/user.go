@@ -3,6 +3,7 @@ package server
 import (
 	"my_mange_system/common"
 	"my_mange_system/model"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -56,6 +57,22 @@ func GetUsetList(username string, roleid int, offset int, limit int) ([]UserList
 	return new_users, total
 }
 
-func UserDelete(userids []int) {
-
+func DeleteUserList(userids []string, roleids []string, userinfo model.User) (bool, string) {
+	var ids []uint
+	for index, id := range userids {
+		if roleids[index] == "1" {
+			return false, "无法删除管理员用户"
+		}
+		_id, err := strconv.Atoi(id)
+		if err != nil {
+			return false, "用户数据解析失败"
+		}
+		if uint(_id) == userinfo.ID {
+			return false, "删除用户种包含自己"
+		}
+		ids = append(ids, uint(_id))
+	}
+	DB := model.DB.Model(&model.User{})
+	DB.Delete(&model.User{}, ids)
+	return true, "删除成功"
 }
