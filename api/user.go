@@ -42,10 +42,10 @@ func UserLogin(ctx *gin.Context) {
 			server.UpdateLoginInfo(params.City, params.Username)
 			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功"}
 		} else {
-			res = common.Result{Httpcode: http.StatusNoContent, Msg: "账号密码错误"}
+			res = common.Result{Httpcode: http.StatusNoContent, Err: "账号密码错误"}
 		}
 	} else {
-		res = common.Result{Httpcode: http.StatusBadRequest, Msg: "用户数据解析失败"}
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
 	}
 	ctx.Set("Res", res)
 	ctx.Next()
@@ -54,7 +54,7 @@ func UserLogin(ctx *gin.Context) {
 func UserInfo(ctx *gin.Context) {
 	user := common.GetSession(ctx, "user")
 	if user == nil {
-		res := common.Result{Httpcode: http.StatusInternalServerError, Msg: "无法获取用户信息"}
+		res := common.Result{Httpcode: http.StatusInternalServerError, Err: "无法获取用户信息"}
 		ctx.Set("Res", res)
 		ctx.Next()
 		return
@@ -91,14 +91,14 @@ func UserDelete(ctx *gin.Context) {
 	var res common.Result
 	user := common.GetSession(ctx, "user")
 	if user == nil {
-		res := common.Result{Httpcode: http.StatusInternalServerError, Msg: "无法获取用户信息"}
+		res := common.Result{Httpcode: http.StatusInternalServerError, Err: "无法获取用户信息"}
 		ctx.Set("Res", res)
 		ctx.Next()
 		return
 	}
 	userinfo := user.(model.User)
 	if userinfo.RoleId != 1 {
-		res := common.Result{Httpcode: http.StatusUnauthorized, Msg: "非管理员无法删除"}
+		res := common.Result{Httpcode: http.StatusUnauthorized, Err: "非管理员无法删除"}
 		ctx.Set("Res", res)
 		ctx.Next()
 		return
@@ -108,12 +108,12 @@ func UserDelete(ctx *gin.Context) {
 		roleids := strings.Split(params.Roleid, ",")
 		result, msg := server.DeleteUserList(userids, roleids, userinfo)
 		if result == false {
-			res = common.Result{Httpcode: http.StatusBadRequest, Msg: msg}
+			res = common.Result{Httpcode: http.StatusNoContent, Err: msg}
 		} else {
 			res = common.Result{Httpcode: http.StatusOK, Msg: msg}
 		}
 	} else {
-		res = common.Result{Httpcode: http.StatusBadRequest, Msg: "用户数据解析失败"}
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
 	}
 
 	ctx.Set("Res", res)

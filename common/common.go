@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,20 +12,21 @@ type Result struct {
 	Httpcode int         `json:"httpcode"`
 	Data     interface{} `json:"data"`
 	Msg      string      `json:"msg"`
+	Err      string      `json:"err"`
 }
 
 func Success(ctx *gin.Context, httpcode int, msg string, data interface{}, token string) {
-	ctx.JSON(httpcode, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"status": httpcode,
 		"msg":    msg,
 		"data":   data,
 		"token":  token,
 	})
 }
-func Error(ctx *gin.Context, httpcode int, msg string) {
-	ctx.JSON(httpcode, gin.H{
+func Error(ctx *gin.Context, httpcode int, err string) {
+	ctx.JSON(http.StatusOK, gin.H{
 		"status": httpcode,
-		"msg":    msg,
+		"error":  err,
 	})
 }
 
