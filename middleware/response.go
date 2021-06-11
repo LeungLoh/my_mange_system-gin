@@ -19,8 +19,8 @@ func Response() gin.HandlerFunc {
 			common.Error(ctx, http.StatusInternalServerError, "获取信息失败")
 		}
 		res := temp.(common.Result)
-		if res.Httpcode == 200 {
-			common.Success(ctx, res.Msg, res.Data, token)
+		if res.Httpcode/200 == 1 {
+			common.Success(ctx, res.Httpcode, res.Msg, res.Data, token)
 		} else {
 			common.Error(ctx, res.Httpcode, res.Msg)
 		}

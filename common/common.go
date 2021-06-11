@@ -2,7 +2,6 @@ package common
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,9 +13,9 @@ type Result struct {
 	Msg      string      `json:"msg"`
 }
 
-func Success(ctx *gin.Context, msg string, data interface{}, token string) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
+func Success(ctx *gin.Context, httpcode int, msg string, data interface{}, token string) {
+	ctx.JSON(httpcode, gin.H{
+		"status": httpcode,
 		"msg":    msg,
 		"data":   data,
 		"token":  token,

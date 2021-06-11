@@ -42,7 +42,7 @@ func UserLogin(ctx *gin.Context) {
 			server.UpdateLoginInfo(params.City, params.Username)
 			res = common.Result{Httpcode: http.StatusOK, Msg: "登录成功"}
 		} else {
-			res = common.Result{Httpcode: http.StatusBadRequest, Msg: "账号密码错误"}
+			res = common.Result{Httpcode: http.StatusNoContent, Msg: "账号密码错误"}
 		}
 	} else {
 		res = common.Result{Httpcode: http.StatusBadRequest, Msg: "用户数据解析失败"}
