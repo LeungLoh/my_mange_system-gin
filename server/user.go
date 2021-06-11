@@ -76,3 +76,21 @@ func DeleteUserList(userids []string, roleids []string, userinfo model.User) (bo
 	DB.Delete(&model.User{}, ids)
 	return true, "删除成功"
 }
+
+func UpdateUserList(userid uint, username string, password string) (bool, string) {
+	var user model.User
+	DB := model.DB.Model(&model.User{})
+	if username == "" {
+		username = user.Username
+	} else {
+		DB.Where("username = ?", username).First(&user)
+		if user.ID != userid {
+			return false, "用户名已存在"
+		}
+	}
+	if password == "" {
+		password = user.Password
+	}
+	DB.Where("id = ?", userid).Updates(model.User{Username: username, Password: password})
+	return true, "更新成功"
+}

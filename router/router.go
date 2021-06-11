@@ -23,6 +23,7 @@ func NewRouter() *gin.Engine {
 		// userlist.Use(middleware.JWTAuth())
 		userlist.GET("", api.UserList)
 		userlist.DELETE("", api.UserDelete)
+		userlist.PUT("", api.UserUpdate)
 	}
 
 	return r

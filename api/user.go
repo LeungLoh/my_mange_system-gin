@@ -5,6 +5,7 @@ import (
 	"my_mange_system/model"
 	"my_mange_system/server"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -73,15 +74,21 @@ func UserInfo(ctx *gin.Context) {
 }
 
 func UserList(ctx *gin.Context) {
-	var userlistparams = UserListParams{
+	var params = UserHandleParams{
 		Username: "",
-		Roleid:   0,
+		Roleid:   "0",
 		Offset:   1,
 		Limit:    10,
 	}
-	ctx.ShouldBindQuery(&userlistparams)
-	users, total := server.GetUsetList(userlistparams.Username, userlistparams.Roleid, (userlistparams.Offset-1)*userlistparams.Limit, userlistparams.Limit)
-	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"users": users, "total": total}}
+	var res common.Result
+	ctx.ShouldBindQuery(&params)
+	roleid, err := strconv.Atoi(params.Roleid)
+	if err != nil {
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
+	} else {
+		users, total := server.GetUsetList(params.Username, roleid, (params.Offset-1)*params.Limit, params.Limit)
+		res = common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: gin.H{"users": users, "total": total}}
+	}
 	ctx.Set("Res", res)
 	ctx.Next()
 }
@@ -118,10 +125,39 @@ func UserDelete(ctx *gin.Context) {
 
 	ctx.Set("Res", res)
 	ctx.Next()
-	return
-
 }
 
+func UserUpdate(ctx *gin.Context) {
+	var params UserHandleParams
+	var res common.Result
+	user := common.GetSession(ctx, "user")
+	if user == nil {
+		res := common.Result{Httpcode: http.StatusInternalServerError, Err: "无法获取用户信息"}
+		ctx.Set("Res", res)
+		ctx.Next()
+		return
+	}
+	userinfo := user.(model.User)
+	if ctx.ShouldBind(&params) == nil {
+		_id, err := strconv.Atoi(params.UserId)
+		if err != nil {
+			res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
+		} else if uint(_id) != userinfo.ID {
+			res = common.Result{Httpcode: http.StatusBadRequest, Err: "只能修改自己用户信息"}
+		} else {
+			result, msg := server.UpdateUserList(uint(_id), params.Username, params.Password)
+			if result == true {
+				res = common.Result{Httpcode: http.StatusOK, Msg: msg}
+			} else {
+				res = common.Result{Httpcode: http.StatusBadRequest, Err: msg}
+			}
+		}
+	} else {
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
+	}
+	ctx.Set("Res", res)
+	ctx.Next()
+}
 func UserLogout(ctx *gin.Context) {
 
 }
