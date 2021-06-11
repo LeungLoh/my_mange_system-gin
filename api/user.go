@@ -36,6 +36,13 @@ type UserHandleParams struct {
 	Limit    int    `form:"limit"`
 }
 
+type ChangePassword struct {
+	Username    string `form:"username"`
+	OldPassword string `form:"oldpassword"`
+	NewPassword string `form:"newpassword"`
+	UserId      int    `form:"userid"`
+}
+
 func UserLogin(ctx *gin.Context) {
 	var params UserHandleParams
 	var res common.Result
@@ -50,6 +57,15 @@ func UserLogin(ctx *gin.Context) {
 	} else {
 		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
 	}
+	ctx.Set("Res", res)
+	ctx.Next()
+}
+
+func UserLogout(ctx *gin.Context) {
+	s := sessions.Default(ctx)
+	s.Clear()
+	s.Save()
+	res := common.Result{Httpcode: http.StatusOK, Msg: "退出登录成功"}
 	ctx.Set("Res", res)
 	ctx.Next()
 }
@@ -71,6 +87,35 @@ func UserInfo(ctx *gin.Context) {
 	}
 
 	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: data}
+	ctx.Set("Res", res)
+	ctx.Next()
+}
+
+func UserChangePassword(ctx *gin.Context) {
+	var params ChangePassword
+	var res common.Result
+	user := common.GetSession(ctx, "user")
+	if user == nil {
+		res := common.Result{Httpcode: http.StatusInternalServerError, Err: "无法获取用户信息"}
+		ctx.Set("Res", res)
+		ctx.Next()
+		return
+	}
+	userinfo := user.(model.User)
+	if ctx.ShouldBind(&params) == nil {
+		if uint(params.UserId) != userinfo.ID {
+			res = common.Result{Httpcode: http.StatusBadRequest, Err: "只能修改自己用户信息"}
+		} else {
+			result, msg := server.ChangeUserPassword(uint(params.UserId), params.OldPassword, params.NewPassword)
+			if result == true {
+				res = common.Result{Httpcode: http.StatusOK, Msg: msg}
+			} else {
+				res = common.Result{Httpcode: http.StatusBadRequest, Err: msg}
+			}
+		}
+	} else {
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
+	}
 	ctx.Set("Res", res)
 	ctx.Next()
 }
@@ -157,14 +202,6 @@ func UserUpdate(ctx *gin.Context) {
 	} else {
 		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
 	}
-	ctx.Set("Res", res)
-	ctx.Next()
-}
-func UserLogout(ctx *gin.Context) {
-	s := sessions.Default(ctx)
-	s.Clear()
-	s.Save()
-	res := common.Result{Httpcode: http.StatusOK, Msg: "退出登录成功"}
 	ctx.Set("Res", res)
 	ctx.Next()
 }

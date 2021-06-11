@@ -94,3 +94,14 @@ func UpdateUserList(userid uint, username string, password string) (bool, string
 	DB.Where("id = ?", userid).Updates(model.User{Username: username, Password: password})
 	return true, "更新成功"
 }
+
+func ChangeUserPassword(userid uint, oldpassword string, newpassword string) (bool, string) {
+	var user model.User
+	DB := model.DB.Model(&model.User{})
+	DB.Where("id = ?", userid).First(&user)
+	if user.Password != oldpassword {
+		return false, "密码不正确"
+	}
+	DB.Where("id = ?", userid).Updates(model.User{Password: newpassword})
+	return true, "修改成功"
+}

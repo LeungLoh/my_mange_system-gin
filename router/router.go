@@ -18,6 +18,7 @@ func NewRouter() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("user/info", api.UserInfo)
+		v1.PUT("user/info", api.UserChangePassword)
 		login := v1.Group("user/login")
 		login.POST("", api.UserLogin)
 		login.DELETE("", api.UserLogout)
