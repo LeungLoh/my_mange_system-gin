@@ -173,3 +173,17 @@ func UserDelete(ctx *gin.Context) {
 	ctx.Set("Res", res)
 	ctx.Next()
 }
+
+func SystemInfo(ctx *gin.Context) {
+	meminfo := server.ReadSystemInfo("meminfo")
+	data := gin.H{
+		"MemTotal":     meminfo["MemTotal"],
+		"MemFree":      meminfo["MemFree"],
+		"Buffers":      meminfo["Buffers"],
+		"Cached":       meminfo["Cached"],
+		"MemAvailable": meminfo["MemAvailable"],
+	}
+	res := common.Result{Httpcode: http.StatusOK, Msg: "获取信息成功", Data: data}
+	ctx.Set("Res", res)
+	ctx.Next()
+}

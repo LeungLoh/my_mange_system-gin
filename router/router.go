@@ -17,15 +17,22 @@ func NewRouter() *gin.Engine {
 	r.Use(middleware.Response())
 	v1 := r.Group("/api/v1")
 	{
-		v1.GET("user/info", api.UserInfo)
-		v1.PUT("user/info", api.UserChangePassword)
+
 		login := v1.Group("user/login")
 		login.POST("", api.UserLogin)
 		login.DELETE("", api.UserLogout)
+
+		userinfo := v1.Group("user/info")
+		userinfo.GET("", api.UserInfo)
+		userinfo.PUT("", api.UserChangePassword)
+
 		userlist := v1.Group("user/list")
 		// userlist.Use(middleware.JWTAuth())
 		userlist.GET("", api.UserList)
 		userlist.DELETE("", api.UserDelete)
+
+		systeminfo := v1.Group("system")
+		systeminfo.GET("info", api.SystemInfo)
 
 	}
 

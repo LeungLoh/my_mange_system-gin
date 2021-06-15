@@ -1,9 +1,14 @@
 package server
 
 import (
+	"bufio"
+	"fmt"
+	"math"
 	"my_mange_system/common"
 	"my_mange_system/model"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -86,4 +91,31 @@ func ChangeUserPassword(userid uint, oldpassword string, newpassword string) (bo
 	}
 	DB.Where("id = ?", userid).Updates(model.User{Password: newpassword})
 	return true, "修改成功"
+}
+
+func ReadSystemInfo(path string) map[string]interface{} {
+	result := make(map[string]interface{})
+	fp, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer fp.Close()
+	buf := bufio.NewScanner(fp)
+	for {
+		if !buf.Scan() {
+			break
+		}
+		line := buf.Text()
+		strings.TrimSpace(line)
+		strSlice := strings.Split(line, ":")
+		if len(strSlice) == 2 {
+			value, err := strconv.ParseFloat(strings.Split(strings.TrimSpace(strSlice[1]), " ")[0], 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+			result[strings.TrimSpace(strSlice[0])] = math.Trunc(value/1024/1024*1e2+0.5) * 1e-2
+		}
+	}
+	return result
+
 }
