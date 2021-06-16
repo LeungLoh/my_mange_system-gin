@@ -34,6 +34,13 @@ func NewRouter() *gin.Engine {
 		systeminfo := v1.Group("system")
 		systeminfo.GET("info", api.SystemInfo)
 
+		todolist := v1.Group("todolist")
+		todolist.GET("", api.GetTodoList)
+		todolist.POST("", api.InsertTodoList)
+		todolist.PUT("", api.UpdateTodoList)
+		todolist.DELETE("", api.DeleteTodoList)
+		// 	todolist.DELETE("", api.DeleteTodoList)
+
 	}
 
 	return r

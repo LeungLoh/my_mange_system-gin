@@ -46,4 +46,5 @@ func Database(connString string) {
 
 func migration() {
 	DB.AutoMigrate(&User{})
+	DB.AutoMigrate(&Todolist{})
 }
