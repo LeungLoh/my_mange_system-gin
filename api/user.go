@@ -187,3 +187,28 @@ func SystemInfo(ctx *gin.Context) {
 	ctx.Set("Res", res)
 	ctx.Next()
 }
+
+func Registered(ctx *gin.Context) {
+	var params UserHandleParams
+	var res common.Result
+	var total int64
+	DB := model.DB.Model(&model.User{})
+	if ctx.ShouldBind(&params) == nil {
+		user := model.User{
+			Username: params.Username,
+			Password: params.Password,
+		}
+		DB.Where("username = ?", params.Username).Count(&total)
+		if total > 0 {
+			res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户名已存在"}
+		} else {
+			DB.Create(&user)
+			res = common.Result{Httpcode: http.StatusOK, Msg: "注册成功"}
+		}
+
+	} else {
+		res = common.Result{Httpcode: http.StatusBadRequest, Err: "用户数据解析失败"}
+	}
+	ctx.Set("Res", res)
+	ctx.Next()
+}
