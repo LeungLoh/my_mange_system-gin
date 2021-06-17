@@ -13,8 +13,8 @@ func Init() {
 
 	// 连接数据库
 	username := "root"          //账号
-	password := "199746"        //密码
-	host := "42.193.131.171"    //数据库地址，可以是Ip或者域名
+	password := "123456"        //密码
+	host := "127.0.0.1"         //数据库地址，可以是Ip或者域名
 	port := 3306                //数据库端口
 	Dbname := "my_mange_system" //数据库名
 	timeout := "10s"            //连接超时，10秒
