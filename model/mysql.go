@@ -2,7 +2,7 @@ package model
 
 import (
 	"log"
-	"my_mange_system/util"
+	"my_mange_system-gin/util"
 	"os"
 	"time"
 

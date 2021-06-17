@@ -1,8 +1,8 @@
 package main
 
 import (
-	"my_mange_system/conf"
-	"my_mange_system/router"
+	"my_mange_system-gin/conf"
+	"my_mange_system-gin/router"
 )
 
 func main() {

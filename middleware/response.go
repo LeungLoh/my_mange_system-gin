@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"my_mange_system/common"
+	"my_mange_system-gin/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

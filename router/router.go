@@ -2,9 +2,9 @@ package router
 
 import (
 	"encoding/gob"
-	"my_mange_system/api"
-	"my_mange_system/middleware"
-	"my_mange_system/model"
+	"my_mange_system-gin/api"
+	"my_mange_system-gin/middleware"
+	"my_mange_system-gin/model"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,9 +1,9 @@
 package api
 
 import (
-	"my_mange_system/common"
-	"my_mange_system/model"
-	"my_mange_system/server"
+	"my_mange_system-gin/common"
+	"my_mange_system-gin/model"
+	"my_mange_system-gin/server"
 	"net/http"
 	"strconv"
 	"strings"

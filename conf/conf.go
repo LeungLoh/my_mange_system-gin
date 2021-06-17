@@ -2,8 +2,8 @@ package conf
 
 import (
 	"fmt"
-	"my_mange_system/model"
-	"my_mange_system/util"
+	"my_mange_system-gin/model"
+	"my_mange_system-gin/util"
 )
 
 func Init() {

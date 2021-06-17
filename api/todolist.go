@@ -1,8 +1,8 @@
 package api
 
 import (
-	"my_mange_system/common"
-	"my_mange_system/model"
+	"my_mange_system-gin/common"
+	"my_mange_system-gin/model"
 	"net/http"
 	"time"
 
