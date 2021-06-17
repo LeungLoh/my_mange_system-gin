@@ -24,7 +24,7 @@ git clone https://github.com/LeungLoh/my_mange_system-gin.git      // 把模板�
 cd my-mange-system-gin                                             // 进入模板目录
 go mod tidy                                                        // 安装项目依赖
 go run main.go                                                     // 开启服务器，浏览器访问 http://localhost:3000
-go build -0 main main.go                                           // 执行构建命令
+go build -o main main.go                                           // 执行构建命令
 ~~~
 
 ## 部署
