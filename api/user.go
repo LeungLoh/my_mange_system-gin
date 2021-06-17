@@ -175,7 +175,7 @@ func UserDelete(ctx *gin.Context) {
 }
 
 func SystemInfo(ctx *gin.Context) {
-	meminfo := server.ReadSystemInfo("meminfo")
+	meminfo := server.ReadSystemInfo("/proc/meminfo")
 	data := gin.H{
 		"MemTotal":     meminfo["MemTotal"],
 		"MemFree":      meminfo["MemFree"],
