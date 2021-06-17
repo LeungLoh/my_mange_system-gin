@@ -1,4 +1,4 @@
-module my_mange_system
+module my_mange_system-gin
 
 go 1.16
 
