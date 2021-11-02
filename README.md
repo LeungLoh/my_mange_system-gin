@@ -30,5 +30,5 @@ go build -o main main.go                                           // 执行构�
 ## 部署
 * 安装nginx 配置反向代理
 * 开放对外的防火墙端口
-* 将前端项目编译好的dist文件cpoy,并配置nginx
+* 将前端项目编译好的dist文件copy,并配置nginx
 * go 编译好的项目使用nohup 或者 docker部署均可
